@@ -1,86 +1,3 @@
-var websocket_url = 'https://ahmetalper-reddit-place-clone.hf.space'
-var websocket_reconnect_timeout = 3
-var websocket;
-
-function connect_websocket() {
-
-    websocket = new WebSocket(websocket_url);
-
-    websocket.onopen = function() {
-
-        console.log('Connected to WebSocket server');
-
-        send_message({'message' : 'fetch grid'});
-
-    };
-
-    websocket.onclose = function() {
-
-        console.log('WebSocket connection closed');
-
-        console.log(`Trying to reconnect in ${websocket_reconnect_timeout} seconds`);
-
-        setTimeout(connect_websocket, websocket_reconnect_timeout * 1000);
-
-    };
-
-    websocket.onerror = function(event) {
-
-        console.log(`WebSocket Error: ${event.message || 'Unknown error'}`);
-
-        if (websocket.readyState === WebSocket.OPEN) {
-
-            websocket.close();
-
-        }
-
-    };
-
-    websocket.onmessage = function(event) {
-
-        try {
-
-            const data = JSON.parse(event.data);
-
-            if (data['message'] == 'fetch grid') {
-
-                grid = data['grid'];
-
-                draw_grid();
-
-            }
-
-            if (data['message'] == 'update grid') {
-
-                grid = data['grid'];
-
-                draw_grid();
-
-            }
-
-        } catch (error) {
-
-            console.error('Error while parsing message data :', error);
-
-        }
-
-    };
-   
-}
-
-function send_message(message) {
-
-    if (websocket.readyState === WebSocket.OPEN) {
-
-        websocket.send(JSON.stringify(message));
-
-    } else {
-
-        console.log('Message cannot sent ! | WebSocket connection is not open.');
-
-    }
-}
-
 const cell_size = 10;
 const row_size = 300;
 const column_size = 300;
@@ -94,20 +11,29 @@ const context = canvas.getContext('2d');
 canvas.width = grid_width;
 canvas.height = grid_height;
 
-const color_picker_container = document.querySelector('.color-picker-container');
 const color_picker = document.querySelector('.color-picker');
+const color_picker_input = document.querySelector('.color-picker-input');
+const eraser = document.querySelector('.eraser');
 
-const colors = ['red', 'green', 'blue', 'pink', 'purple', 'yellow', 'orange', 'black', 'white'];
+const colors = ["#ff0000", "#008000", "#0000ff", "#ffc0cb", "#800080", "#ffff00", "#ffa500", "#000000", "#ffffff"];
 
 var selected_color = colors[0];
 
-color_picker_container.style.backgroundColor = selected_color;
+color_picker.style.backgroundColor = selected_color;
 
-color_picker.addEventListener('change', () => {
+color_picker_input.addEventListener('change', () => {
 
-    selected_color = color_picker.value;
+    selected_color = color_picker_input.value;
 
-    color_picker_container.style.backgroundColor = color_picker.value;
+    color_picker.style.backgroundColor = color_picker_input.value;
+
+});
+
+eraser.addEventListener('click', () => {
+
+    selected_color = '#181818';
+
+    color_picker.style.backgroundColor = '#181818';
 
 });
 
@@ -124,6 +50,30 @@ function create_grid() {
         }
 
     }
+
+}
+
+function update_grid() {
+
+    fetch('https://ahmetalper-reddit-place-clone.hf.space/grid')
+
+        .then(response => response.json())
+
+		.then(data => {
+
+			grid = data['grid']
+
+			draw_grid();
+
+			console.log(`${new Date().toLocaleString()} | Grid has been updated successfully.`);
+
+		})
+
+		.catch(error => {
+
+			console.error(`${new Date().toLocaleString()} | error : ${error}`);
+
+		});
 
 }
 
@@ -157,7 +107,21 @@ canvas.addEventListener('click', (event) => {
 
             cell.color = selected_color;
 
-            send_message({'message' : 'update grid', 'index' : index, 'color' : selected_color});
+			fetch(`https://ahmetalper-reddit-place-clone.hf.space/update/${index}/${selected_color.substring(1)}`)
+
+				.then(response => response.json())
+
+				.then(data => {
+
+					console.log(`${new Date().toLocaleString()} | cell ${index} | ${selected_color} | ${data['status']}`);
+
+				})
+
+				.catch(error => {
+
+					console.error(`${new Date().toLocaleString()} | error : ${error}`);
+
+				});
 
         }
 
@@ -171,4 +135,6 @@ create_grid();
 
 draw_grid();
 
-connect_websocket();
+update_grid();
+
+setInterval(update_grid, 5000);
