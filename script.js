@@ -1,6 +1,6 @@
-var websocket;
-var websocket_url = 'https://ahmetalper-wbtest.hf.space'
+var websocket_url = 'https://ahmetalper-reddit-place-clone.hf.space'
 var websocket_reconnect_timeout = 3
+var websocket;
 
 function connect_websocket() {
 
@@ -42,8 +42,6 @@ function connect_websocket() {
 
             const data = JSON.parse(event.data);
 
-            console.log('data :', data);
-
             if (data['message'] == 'fetch grid') {
 
                 grid = data['grid'];
@@ -76,8 +74,6 @@ function send_message(message) {
 
         websocket.send(JSON.stringify(message));
 
-        console.log(`Message sent : ${JSON.stringify(message)}`);
-
     } else {
 
         console.log('Message cannot sent ! | WebSocket connection is not open.');
@@ -86,8 +82,8 @@ function send_message(message) {
 }
 
 const cell_size = 10;
-const row_size = 200;
-const column_size = 200;
+const row_size = 300;
+const column_size = 300;
 
 const grid_width = (row_size * cell_size) + (row_size + 1);
 const grid_height = (column_size * cell_size) + (column_size + 1);
@@ -98,10 +94,22 @@ const context = canvas.getContext('2d');
 canvas.width = grid_width;
 canvas.height = grid_height;
 
+const color_picker_container = document.querySelector('.color-picker-container');
+const color_picker = document.querySelector('.color-picker');
+
 const colors = ['red', 'green', 'blue', 'pink', 'purple', 'yellow', 'orange', 'black', 'white'];
 
-var color_index = 0;
-var selected_color = colors[color_index];
+var selected_color = colors[0];
+
+color_picker_container.style.backgroundColor = selected_color;
+
+color_picker.addEventListener('change', () => {
+
+    selected_color = color_picker.value;
+
+    color_picker_container.style.backgroundColor = color_picker.value;
+
+});
 
 var grid = [];
 
@@ -156,20 +164,6 @@ canvas.addEventListener('click', (event) => {
     });
 
     draw_grid();
-
-});
-
-document.addEventListener('keydown', (event) => {
-
-    if (event.key === 'c' || event.key === 'C') {
-
-        color_index = (color_index + 1) % colors.length;
-
-        selected_color = colors[color_index];
-
-        console.log(`selected_color : ${selected_color}`);
-
-    }
 
 });
 
