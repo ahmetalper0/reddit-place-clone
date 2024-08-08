@@ -63,7 +63,7 @@ function update_grid() {
 
 			grid.forEach((cell, index) => {
 
-				cell['color'] = data[index]
+				cell['color'] = data['colors'][index];
 				
 			});
 
