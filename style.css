@@ -13,16 +13,46 @@ body {
 }
 
 .color-picker-container {
+    width: 76px;
+    height: 32px;
+    position: fixed;
+    top: 34px;
+    left: 34px;
+}
+
+.color-picker {
     width: 30px;
     height: 30px;
     position: fixed;
     top: 34px;
     left: 34px;
+    background-color: #181818;
     border: 1px solid white;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.color-picker {
+.eraser {
+    width: 30px;
+    height: 30px;
+    position: fixed;
+    top: 34px;
+    left: 78px;
+    background-color: #181818;
+    border: 1px solid white;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.color-picker-input {
     opacity: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }
 
 .container {
