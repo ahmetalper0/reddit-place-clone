@@ -55,13 +55,17 @@ function create_grid() {
 
 function update_grid() {
 
-    fetch('https://ahmetalper-reddit-place-clone.hf.space/grid')
+    fetch('https://ahmetalper-reddit-place-clone.hf.space/colors')
 
         .then(response => response.json())
 
 		.then(data => {
 
-			grid = data['grid']
+			grid.forEach((cell, index) => {
+
+				cell['color'] = data[index]
+				
+			});
 
 			draw_grid();
 
@@ -137,4 +141,4 @@ draw_grid();
 
 update_grid();
 
-setInterval(update_grid, 5000);
+setInterval(update_grid, 10000);
