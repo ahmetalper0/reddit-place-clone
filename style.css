@@ -8,21 +8,30 @@
 }
 
 body {
+    background-color: #181818;
     height: 100vh;
-    background-color: red;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+}
+
+.color-picker-container {
+    width: 30px;
+    height: 30px;
+    position: fixed;
+    top: 34px;
+    left: 34px;
+    border: 1px solid white;
+}
+
+.color-picker {
+    opacity: 0;
 }
 
 .container {
-    width: 100%;
-    height: 100%;
-    background-color: purple;
+    width: max-content;
+    height: max-content;
     overflow: scroll;
+    position: relative;
 }
 
 .grid {
     display: block;
 }
-
